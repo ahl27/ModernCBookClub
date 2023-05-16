@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 
+// Workhorse function, called by my_mergesort and does the recursion calling
 void mergesort_helper(void *arr, int start, int midpoint, int end, size_t typesize, int (*comparator)(const void*, const void*)){
   if(start+1 != midpoint)
     mergesort_helper(arr, start, (start+midpoint)/2, midpoint, typesize, comparator);
@@ -31,11 +32,16 @@ void mergesort_helper(void *arr, int start, int midpoint, int end, size_t typesi
   return;
 }
 
+
+// Main callable mergesort function (different name to avoid conflict with stdlib.h)
 void my_mergesort(void *arr, int num, size_t size, int (*comparator)(const void*, const void*)){
   mergesort_helper(arr, 0, num/2, num, size, comparator);
 }
 
-
+/*
+ *  Basic functions to compare two values by casting them to the correct type
+ *  Each returns -1 if the first value is less, 0 if same, and 1 if second is greater
+ */
 int int_comparator(const void* x, const void* y){
   if(*(int *)x == *(int *)y)
     return 0;
@@ -55,25 +61,37 @@ int double_comparator(const void* x, const void* y){
 }
 
 int main(){
+  // Main function to run tests; most of this is just printing
   srand(time(NULL));
   int num_vals = 100;
-  
+
+
+  // First Test: Sorting integers
+  printf("**************\n");  
   int int_test[num_vals];
   for(int i=0; i<num_vals; i++) 
     int_test[i] = rand() % 64;
 
   printf("Integers Test:\n");
-  for(int i=0; i<num_vals; i++)
-    printf("%d ", int_test[i]);
+  for(int i=0; i<num_vals; i++){
+    if(i%10==0 && i>0)
+      printf("\n");
+    printf("%02d ", int_test[i]);
+  }
   printf("\n");
 
   my_mergesort(int_test, num_vals, sizeof(int), &int_comparator);
   printf("Result:\n");
-  for(int i=0; i<num_vals; i++)
-    printf("%d ", int_test[i]);
+  for(int i=0; i<num_vals; i++){
+    if(i%10==0 && i>0)
+      printf("\n");
+    printf("%02d ", int_test[i]);
+  }
   printf("\n\n");
 
 
+  // Second Test: Sorting characters
+  printf("**************\n");
   char char_test[num_vals+1];
   for(int i=0; i<num_vals; i++) 
     char_test[i] = (rand() % (122-97)) + 97;
@@ -81,23 +99,32 @@ int main(){
   printf("String Test:\n%s\n", char_test);
 
   my_mergesort(char_test, num_vals, sizeof(char), &char_comparator);
-  printf("Result:\n%s\n\n", char_test);
+  printf("\nResult:\n%s\n\n", char_test);
 
 
+  // Third Test: Sorting doubles
+  printf("**************\n");
   double double_test[num_vals];
   for(int i=0; i<num_vals; i++) 
     double_test[i] = ((float)rand()/(float)(RAND_MAX)) * 5;
 
   printf("Doubles Test:\n");
-  for(int i=0; i<num_vals; i++)
-    printf("%.2f ", double_test[i]);
+  for(int i=0; i<num_vals; i++){
+    if(i%10 == 0 && i>0)
+      printf("\n");
+    printf("%3.2f ", double_test[i]);
+  }
   printf("\n");
 
   my_mergesort(double_test, num_vals, sizeof(double), &double_comparator);
-  printf("Result:\n");
-  for(int i=0; i<num_vals; i++)
-    printf("%.2f ", double_test[i]);
+  printf("\nResult:\n");
+  for(int i=0; i<num_vals; i++){
+    if(i%10 == 0 && i>0)
+      printf("\n");
+    printf("%3.2f ", double_test[i]);
+  }
   printf("\n\n");
 
-  return(0);
+
+  return(EXIT_SUCCESS);
 }
